@@ -12,6 +12,7 @@ pub struct Config {
 }
 
 impl Config {
+    // argument format: <major|minor> <mdPath> <htmlPath>
     pub fn new(args: &[String]) -> Result<Config, String> {
         if args.len() < 4 {
             return Err(format!("expected 3 arguments got {}", args.len()));
@@ -51,16 +52,28 @@ mod tests {
     use super::*;
 
     #[test]
-    fn one_result() {
-        let query = "duct";
-        let contents = "\
-Rust:
-safe, fast, productive.
-Pick three.";
+    fn update_html_creates_valid_string() {
+        let args: Vec<String> = vec!["ignored", "major"];
 
-        assert_eq!(
-            vec!["safe, fast, productive."],
-            search(query, contents)
-        );
+        let config = Config::new(&args).unwrap_or_else(|err| {
+            println!("Problem parsing arguments: {}", err);
+            process::exit(1);
+        });
+    }
+
+     #[test]
+    fn update_html_updates_to_valid_string() {
+
+    }
+
+
+    #[test]
+    fn update_md_creates_valid_string() {
+
+    }
+
+     #[test]
+    fn update_md_updates_to_valid_string() {
+
     }
 }
