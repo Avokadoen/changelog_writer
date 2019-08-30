@@ -1,7 +1,7 @@
 # Changelog Writer
 The goal of the changelog writer is to generate a structured changelog for different file formats either creating the file (initialize) or updating existing files
 
-The program should have a simple argument structure and repository specific settings constants should be defined in a changelog_writer_config.json in the root of the repo
+The program should have a simple argument structure and repository specific settings constants should be defined in a ChangelogWriterConfig.json in the root of the repo
 
 # Specifications
 ## command and arguments
@@ -14,9 +14,7 @@ OPTIONS:
 -u | --upgrade          case insensitive.
                         the version step you want to take
                         can be any of:
-                        major  | ma
-                        minor  | mi
-                        lesser | le
+                        of types defined in repo config file
 
 init                    creates a new config file from default
                         (?maybe insert git hook to check for valid
@@ -39,19 +37,19 @@ The changelog writer needs to know how big you think the update is. this is the 
     "versionTypes": [ 
         { "major": "Ma" },
         { "minor": "Mi" },
-        { "lesser": "Le" },
+        { "lesser": "Le" }
     ],
     "versionFormat": "MaMa.MiMi.LeLe",
     "targetFilePaths": [ 
         "./something/somthing/changelog.xml", 
         "./something/somthing2/changelog.xml",
-        "./changelog.md",
+        "./changelog.md"
     ],
     "categories": [
         "bugfix",
         "feature",
         "technical",
-        "tests",
+        "tests"
     ],
     "appendPosition": "top"
 }
