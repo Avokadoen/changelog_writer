@@ -18,7 +18,7 @@ OPTIONS:
 
 init                    creates a new config file from default
                         (?maybe insert git hook to check for valid
-                        commit message or too is it intrusive?)
+                        commit message or is it too intrusive?)
 </pre>
 
 
