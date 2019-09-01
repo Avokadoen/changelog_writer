@@ -1,7 +1,7 @@
 # Changelog Writer
 The goal of the changelog writer is to generate a structured changelog for different file formats either creating the file (initialize) or updating existing files
 
-The program should have a simple argument structure and repository specific settings constants should be defined in a ChangelogWriterConfig.json in the root of the repo
+The program should have a simple argument structure and repository specific settings should be defined in a ChangelogWriterConfig.json in the root of the repo
 
 # Specifications
 ## command and arguments
