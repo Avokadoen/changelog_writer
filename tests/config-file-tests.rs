@@ -1,27 +1,25 @@
 #[cfg(test)]
 mod tests {
-    use super::*;
     use changelog_writer::ConfigFile;
 
     fn get_test_json_string() -> String {
+        // simplefied config for testing
         String::from(
         r#"{
             "default_upgrade": "minor",
-            "version_types": [ 
-                { "major": "Ma" },
-                { "minor": "Mi" },
-                { "lesser": "Le" }
-            ],
-            "version_format": "MaMa.MiMi.LeLe",
-            "target_file_paths": [ 
-                "./something/somthing/changelog.xml", 
-                "./something/somthing2/changelog.xml",
-                "./changelog.md"
+            "version_types": [
+                { "version_type": [ "major", "Ma" ] },
+                { "version_type": [ "minor", "Mi"] },
+            ], 
+            "version_format": "MaMa.MiMi",
+            "changelog_paths": [ 
+                "./changelogs/somthing1/changelog.xml", 
+                "./changelogs/somthing2/changelog.xml",
+                "./changelogs/changelog.md"
             ],
             "categories": [
                 "bugfix",
                 "feature",
-                "technical",
                 "tests"
             ],
             "append_position": "top"
@@ -31,16 +29,33 @@ mod tests {
     #[test]
     fn create_new_config() {
         let json = get_test_json_string();
-        let config_file = ConfigFile::new(json);
-        // this is probably a bad way of doing assert ...
-        // alternative but not sure how to print error atm: assert!(config_file.is_ok() && !config_file.is_err());
-        match config_file {
+        match ConfigFile::new(json) {
             Ok(_) => assert!(true),
             Err(e) => {
                 println!("error: {}", e);
                 assert!(false)
             },
         }
+    }
+
+     #[test]
+    fn validate_version_types() {
+        let json = get_test_json_string();
+        let config_file = match ConfigFile::new(json) {
+            Ok(c) => c,
+            Err(e) => {
+                println!("error: {}", e);
+                assert!(false)
+            },
+        }
+        match config_file.version_types.get(0) {
+            Some(v_type) => println!("The third element is {}", third),
+            None => {
+                println!("types zero was none!");
+                assert!(false);
+            }
+        }
+        assert_eq!()
     }
 
 }

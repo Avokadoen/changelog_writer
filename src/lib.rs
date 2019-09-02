@@ -1,10 +1,16 @@
 use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize};
 
-#[derive(Serialize, Deserialize)]
+
+#[derive(Deserialize)]
+pub struct VersionType {
+    version_type: [String; 2],
+}
+
+#[derive(Deserialize)]
 pub struct ConfigFile {
     default_upgrade: Option<String>,
-    version_types: HashMap<String, String>,
+    version_types: Vec<VersionType>,
     version_format: String,
     changelog_paths: Vec<String>,
     categories: Vec<String>,
