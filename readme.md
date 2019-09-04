@@ -115,7 +115,7 @@ The file should then be the following:
 ```
 
 # why am i doing this
-For personal use i would find this system helpful in allowing me to maintain any changelog and also multiple in different format in the same project (i.e a webpage that has a public html changelog and a md repository changelog). 
+For personal use i would find this system helpful in allowing me to maintain any changelog and also multiple in different formats in the same project (i.e a webpage that has a public html changelog and a md repository changelog). 
 
 But more importanly I would like to create this to learn more rust.
 

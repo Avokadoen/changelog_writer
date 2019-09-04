@@ -1,5 +1,4 @@
 
-
 pub mod config_systems {
     pub mod file {
         use serde::{Deserialize};
@@ -32,17 +31,21 @@ pub mod config_systems {
         #[derive(PartialEq, Debug)]
         pub enum ArgumentType {
             Init,
-            Upgrade,
+            // TODO: should not hold string as it leads to too much cloning?
+            Upgrade(String),
         }
 
         impl ArgumentType {
              pub fn parse_arguments(args: &[String]) -> Result<ArgumentType, &'static str> {
-                if args.len() != 2 {
-                    return Err("expected 1 argument"); // TOOD: got {}
+                if args.len() < 2 || args.len() > 3 {
+                    return Err("invalid number of arguments expected 2-3"); // TOOD: got {}
                 }
-                
+                // TODO: replace clone of string "version"
                 let args_type = match args[1].as_ref() {
-                    "-u" | "--upgrade" => ArgumentType::Upgrade,
+                    "-u" | "--upgrade" => match args.get(2) {
+                       Some(version) => ArgumentType::Upgrade(String::from(version)),
+                       None => return Err("upgrade step was none"),
+                    }
                     "-i" | "--init" => ArgumentType::Init,
                     _ => return Err("invalid argument"),
                 };

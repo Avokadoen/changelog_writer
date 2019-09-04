@@ -129,28 +129,33 @@ mod config_tests {
         fn invalid_arg_result_in_err() {
             assert!(ArgumentType::parse_arguments(&[String::from("ignored"), String::from("illegal")]).is_err());
         }
+
+          #[test]
+        fn no_upgrade_step_on_upgrade_result_in_err() {
+            assert!(ArgumentType::parse_arguments(&[String::from("ignored"), String::from("-u")]).is_err());
+        }
     
         #[test]
         fn valid_arg_result_in_ok() {
-            assert!(ArgumentType::parse_arguments(&[String::from("ignored"), String::from("-u")]).is_ok());
+            assert!(ArgumentType::parse_arguments(&[String::from("ignored"), String::from("-u"), String::from("none valid but not validated yet")]).is_ok());
         }
 
         #[test]
         fn dash_u_arg_result_in_upgrade() {
-            let argument_type = match ArgumentType::parse_arguments(&[String::from("ignored"), String::from("-u")]) {
+            let argument_type = match ArgumentType::parse_arguments(&[String::from("ignored"), String::from("-u"), String::from("major")]) {
                 Ok(t) => t,
                 Err(_) => panic!("got error on -u"),
             };
-            assert_eq!(argument_type, ArgumentType::Upgrade);
+            assert_eq!(argument_type, ArgumentType::Upgrade(String::from("major")));
         }
 
         #[test]
         fn dash_upgrade_arg_result_in_upgrade() {
-                  let argument_type = match ArgumentType::parse_arguments(&[String::from("ignored"), String::from("--upgrade")]) {
+                  let argument_type = match ArgumentType::parse_arguments(&[String::from("ignored"), String::from("--upgrade"), String::from("major")]) {
                 Ok(t) => t,
                 Err(_) => panic!("got error on --upgrade"),
             };
-            assert_eq!(argument_type, ArgumentType::Upgrade);
+            assert_eq!(argument_type, ArgumentType::Upgrade(String::from("major")));
         }
 
         #[test]
