@@ -16,7 +16,7 @@ OPTIONS:
                         can be any of:
                         of types defined in repo config file
 
-init                    creates a new config file from default
+-i | --init             creates a new config file from default
                         (?maybe insert git hook to check for valid
                         commit message or is it too intrusive?)
 </pre>
