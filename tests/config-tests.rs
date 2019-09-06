@@ -183,9 +183,7 @@ mod config_tests {
         use changelog_writer::config_systems::args::ArgumentType;
         use changelog_writer::config_systems::file_args_merge;
 
-        #[test]
-        fn upgrade_major_with_major_in_file_verified_true() {
-            let arg = ArgumentType::Upgrade(String::from("major"));
+        fn setup_tests(arg_string: String) -> (ArgumentType, ConfigFile) {
             let json = file::get_test_json_string();
             let file = match ConfigFile::new(json) {
                 Ok(f) => f,
@@ -193,36 +191,72 @@ mod config_tests {
                     panic!("error: {}", e);
                 },
             };
+            let arg = ArgumentType::Upgrade(arg_string);
+
+            (arg, file)
+        }
+
+        #[test]
+        fn upgrade_major_with_major_in_file_verified_true() {
+            let (arg, file) = setup_tests(String::from("major"));
 
             assert!(file_args_merge::verify_arg_to_file_upgrade(arg, file));
         }
         
         #[test]
         fn upgrade_ma_with_major_in_file_verified_true() {
-            let arg = ArgumentType::Upgrade(String::from("ma"));
-            let json = file::get_test_json_string();
-            let file = match ConfigFile::new(json) {
-                Ok(f) => f,
-                Err(e) => {
-                    panic!("error: {}", e);
-                },
-            };
+            let (arg, file) = setup_tests(String::from("ma"));
 
             assert!(file_args_merge::verify_arg_to_file_upgrade(arg, file));
         }
 
-         #[test]
+        #[test]
+        fn upgrade_minor_with_major_in_file_verified_true() {
+            let (arg, file) = setup_tests(String::from("minor"));
+
+            assert!(file_args_merge::verify_arg_to_file_upgrade(arg, file));
+        }
+
+        #[test]
+        fn upgrade_mi_with_major_in_file_verified_true() {
+            let (arg, file) = setup_tests(String::from("mi"));
+
+            assert!(file_args_merge::verify_arg_to_file_upgrade(arg, file));
+        }
+
+
+        #[test]
         fn upgrade_major_with_manure_in_file_verified_false() {
-            let arg = ArgumentType::Upgrade(String::from("manure"));
-            let json = file::get_test_json_string();
-            let file = match ConfigFile::new(json) {
-                Ok(f) => f,
-                Err(e) => {
-                    panic!("error: {}", e);
-                },
-            };
+            let (arg, file) = setup_tests(String::from("manure"));
 
             assert!(!file_args_merge::verify_arg_to_file_upgrade(arg, file));
         }
+    }
+
+    mod changelog_manipulator {
+        use changelog_writer::config_systems::changelog_manipulator;
+        use std::fs;
+
+        fn cleanup_file(path: &str) {
+            match fs::remove_file(path) {
+                Ok(_) => (),
+                Err(_) => panic!("failed to delete test file {}", path),
+            }
+        }
+
+        // TODO: these tests should use match as ok result in file that needs cleanup, and err does not
+        #[test]
+        fn init_changelog_md_results_ok() {
+            let test_ok = changelog_manipulator::init_changelog_md("hello_world.md").is_ok();
+            cleanup_file("hello_world.md");
+            assert!(test_ok);
+        }
+
+        #[test]
+        fn init_changelog_md_with_illegal_extension_results_errs() {
+            let test_ok = changelog_manipulator::init_changelog_md("hello_world.illegal").is_err();
+            assert!(test_ok);
+        }
+
     }
 }

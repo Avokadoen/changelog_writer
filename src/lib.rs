@@ -1,4 +1,4 @@
-
+// TODO: document code as i reach a functional state ///
 pub mod config_systems {
     pub mod file {
         use serde::{Deserialize};
@@ -56,10 +56,12 @@ pub mod config_systems {
         }
     }
 
+    // TODO: we don't need a mod for one function ...
     pub mod file_args_merge {
         use super::args::ArgumentType;
         use super::file::ConfigFile;
 
+        // TODO: move this to somewhere else (maybe argument type)
         pub fn verify_arg_to_file_upgrade(argument_type: ArgumentType, config_file: ConfigFile) -> bool {
             match argument_type {
                 ArgumentType::Init => true,
@@ -69,6 +71,25 @@ pub mod config_systems {
                     .any(|v| v.version_type[0].to_ascii_lowercase() == s || v.version_type[1].to_ascii_lowercase() == s),
             }
         }
+    }
 
+    pub mod changelog_manipulator {
+        use std::fs::File;
+        use std::io::prelude::*;
+
+        pub fn init_changelog_md(path: &str) -> Result<(), &str> {
+            if !path.contains(".md") {
+                return Err("recieved non md file");
+            }
+            let mut file = match File::create(path) {
+                Ok(o) => o,
+                Err(_) => return Err("failed to create file"),
+            };
+            match file.write_all(b"hello world") {
+                Err(_) => return Err("failed to write bytes to file"),
+                _ => (),
+            };
+            Ok(())
+        }
     }
 }
