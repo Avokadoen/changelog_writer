@@ -3,7 +3,7 @@ mod config_tests {
     mod file {
         use changelog_writer::config_systems::file::ConfigFile;
 
-        fn get_test_json_string() -> String {
+        pub fn get_test_json_string() -> String {
             // simplefied config for testing
             String::from(
             r#"{
@@ -130,7 +130,7 @@ mod config_tests {
             assert!(ArgumentType::parse_arguments(&[String::from("ignored"), String::from("illegal")]).is_err());
         }
 
-          #[test]
+        #[test]
         fn no_upgrade_step_on_upgrade_result_in_err() {
             assert!(ArgumentType::parse_arguments(&[String::from("ignored"), String::from("-u")]).is_err());
         }
@@ -151,7 +151,7 @@ mod config_tests {
 
         #[test]
         fn dash_upgrade_arg_result_in_upgrade() {
-                  let argument_type = match ArgumentType::parse_arguments(&[String::from("ignored"), String::from("--upgrade"), String::from("major")]) {
+            let argument_type = match ArgumentType::parse_arguments(&[String::from("ignored"), String::from("--upgrade"), String::from("major")]) {
                 Ok(t) => t,
                 Err(_) => panic!("got error on --upgrade"),
             };
@@ -160,7 +160,7 @@ mod config_tests {
 
         #[test]
         fn dash_i_arg_result_in_upgrade() {
-                  let argument_type = match ArgumentType::parse_arguments(&[String::from("ignored"), String::from("-i")]) {
+            let argument_type = match ArgumentType::parse_arguments(&[String::from("ignored"), String::from("-i")]) {
                 Ok(t) => t,
                 Err(_) => panic!("got error on -i"),
             };
@@ -169,11 +169,60 @@ mod config_tests {
 
         #[test]
         fn dash_init_arg_result_in_upgrade() {
-                  let argument_type = match ArgumentType::parse_arguments(&[String::from("ignored"), String::from("--init")]) {
+            let argument_type = match ArgumentType::parse_arguments(&[String::from("ignored"), String::from("--init")]) {
                 Ok(t) => t,
                 Err(_) => panic!("got error on --init"),
             };
             assert_eq!(argument_type, ArgumentType::Init);
+        }
+    }
+
+    mod file_args_merge {
+        use super::*;
+        use changelog_writer::config_systems::file::ConfigFile;
+        use changelog_writer::config_systems::args::ArgumentType;
+        use changelog_writer::config_systems::file_args_merge;
+
+        #[test]
+        fn upgrade_major_with_major_in_file_verified_true() {
+            let arg = ArgumentType::Upgrade(String::from("major"));
+            let json = file::get_test_json_string();
+            let file = match ConfigFile::new(json) {
+                Ok(f) => f,
+                Err(e) => {
+                    panic!("error: {}", e);
+                },
+            };
+
+            assert!(file_args_merge::verify_arg_to_file_upgrade(arg, file));
+        }
+        
+        #[test]
+        fn upgrade_ma_with_major_in_file_verified_true() {
+            let arg = ArgumentType::Upgrade(String::from("ma"));
+            let json = file::get_test_json_string();
+            let file = match ConfigFile::new(json) {
+                Ok(f) => f,
+                Err(e) => {
+                    panic!("error: {}", e);
+                },
+            };
+
+            assert!(file_args_merge::verify_arg_to_file_upgrade(arg, file));
+        }
+
+         #[test]
+        fn upgrade_major_with_manure_in_file_verified_false() {
+            let arg = ArgumentType::Upgrade(String::from("manure"));
+            let json = file::get_test_json_string();
+            let file = match ConfigFile::new(json) {
+                Ok(f) => f,
+                Err(e) => {
+                    panic!("error: {}", e);
+                },
+            };
+
+            assert!(!file_args_merge::verify_arg_to_file_upgrade(arg, file));
         }
     }
 }

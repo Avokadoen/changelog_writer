@@ -55,5 +55,20 @@ pub mod config_systems {
             }
         }
     }
-}
 
+    pub mod file_args_merge {
+        use super::args::ArgumentType;
+        use super::file::ConfigFile;
+
+        pub fn verify_arg_to_file_upgrade(argument_type: ArgumentType, config_file: ConfigFile) -> bool {
+            match argument_type {
+                ArgumentType::Init => true,
+                ArgumentType::Upgrade(s) => 
+                    config_file.version_types
+                    .iter()
+                    .any(|v| v.version_type[0].to_ascii_lowercase() == s || v.version_type[1].to_ascii_lowercase() == s),
+            }
+        }
+
+    }
+}
