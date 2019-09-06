@@ -3,6 +3,17 @@ The goal of the changelog writer is to generate a structured changelog for diffe
 
 The program should have a simple argument structure and repository specific settings should be defined in a ChangelogWriterConfig.json in the root of the repo
 
+# Current Progress
+- [x] Parse arguements
+- [x] Parse
+- [x] Earth (Orbit/Moon)
+- [x] Mars
+- [ ] Jupiter
+- [ ] Saturn
+- [ ] Uranus
+- [ ] Neptune
+- [ ] Comet Haley
+
 # Specifications
 ## command and arguments
 USEAGE:
