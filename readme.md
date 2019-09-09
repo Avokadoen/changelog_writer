@@ -7,12 +7,12 @@ The program should have a simple argument structure and repository specific sett
 - [x] Parse arguements
 - [x] Parse file settings
 - [x] Validate file to argument sanity 
-- [] Retrieve git commit history
-- [] Format git hostory to valid md
-- [] Format git hostory to valid xml
-- [] Format git hostory to valid html
-- [] Format git hostory to valid ---
-- [] Send correct file to correct config path
+- [ ] Retrieve git commit history
+    - [ ] Format git hostory to valid md
+    - [ ] Format git hostory to valid xml
+    - [ ] Format git hostory to valid html
+    - [ ] Format git hostory to valid ---
+- [ ] Send correct file to correct config path
 
 # Specifications
 ## command and arguments
