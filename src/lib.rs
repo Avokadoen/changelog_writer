@@ -1,4 +1,7 @@
 // TODO: document code as i reach a functional state ///
+// TODO: refactor modules
+// TODO: create file structure, here and tests!
+
 pub mod config_systems {
     pub mod file {
         use serde::{Deserialize};
@@ -7,6 +10,12 @@ pub mod config_systems {
         pub struct VersionType {
             pub version_type: [String; 2],
         }
+
+        impl VersionType {
+            pub fn contains_type(&self, check_type: &str) -> bool {
+                return self.version_type[0].to_ascii_lowercase() == check_type || self.version_type[1].to_ascii_lowercase() == check_type;
+            }
+        }        
 
         #[derive(Deserialize)]
         pub struct ConfigFile {
@@ -20,7 +29,7 @@ pub mod config_systems {
 
         // TODO: validate values so that they can't be mismatched
         impl ConfigFile {
-            pub fn new(json_string: String) -> Result<ConfigFile, Box<dyn std::error::Error + 'static>> {
+            pub fn new(json_string: &str) -> Result<ConfigFile, Box<dyn std::error::Error + 'static>> {
                 //let contents = fs::read_to_string(path)?;
                 let config: ConfigFile = serde_json::from_str(&json_string)?;
                 Ok(config)
@@ -68,7 +77,7 @@ pub mod config_systems {
                 ArgumentType::Upgrade(s) => 
                     config_file.version_types
                     .iter()
-                    .any(|v| v.version_type[0].to_ascii_lowercase() == s || v.version_type[1].to_ascii_lowercase() == s),
+                    .any(|v| v.contains_type(&s)),
             }
         }
     }
@@ -77,7 +86,7 @@ pub mod config_systems {
         use std::fs::File;
         use std::io::prelude::*;
 
-        pub fn init_changelog_md(path: &str) -> Result<(), &str> {
+        pub fn init_changelog_md(path: &str, content: &[u8]) -> Result<(), &'static str> {
             if !path.contains(".md") {
                 return Err("recieved non md file");
             }
@@ -85,11 +94,53 @@ pub mod config_systems {
                 Ok(o) => o,
                 Err(_) => return Err("failed to create file"),
             };
-            match file.write_all(b"hello world") {
+            match file.write_all(content) {
                 Err(_) => return Err("failed to write bytes to file"),
                 _ => (),
             };
             Ok(())
         }
+    }
+}
+
+pub mod git_data_fetcher {
+    use std::path::Path;
+    use std::fs::{self};
+    use super::config_systems::file;
+    
+    /*pub struct CommitMessageLog {
+        msg: String,
+    }*/
+
+    // TODO: refactor, too much heap
+    pub fn create_commit_msgs_to_parse(prev_hash: &str, git_dir: &Path, valid_versions: Vec<String>) -> Result<Vec<String>, &'static str> {
+        let logs_dir = git_dir.join("logs");
+
+        if !logs_dir.is_dir() {
+            eprintln!("logs_dir: {}", logs_dir.into_os_string().into_string().unwrap());
+            return Err("logs dir was not a dir");
+        }
+
+        let head_path = logs_dir.join("HEAD");
+        if !head_path.is_file() {
+            return Err("head path was not file");
+        }
+
+        let head_content = match fs::read_to_string(head_path) {
+            Ok(s) => s,
+            Err(_) => return Err("failed to read head"),
+        };
+
+        let commit_events = head_content.split("\n");
+
+        let changes: Vec<String> = Vec::new(); 
+        for event in commit_events {
+            if event.contains("cat:") {
+                // valid_versions.iter().any(|v| v.contains_type
+
+            }
+         }
+
+        Err("not implemented")
     }
 }

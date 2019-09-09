@@ -1,36 +1,40 @@
 #[cfg(test)]
 mod config_tests {
+
+    // move to some test utlity module
+    pub fn get_test_json_string() -> String {
+        // simplefied config for testing
+        String::from(
+        r#"{
+            "default_upgrade": "minor",
+            "version_types": [
+                { "version_type": [ "major", "Ma" ] },
+                { "version_type": [ "minor", "Mi"] }
+            ], 
+            "version_format": "MaMa.MiMi",
+            "changelog_paths": [ 
+                "./changelogs/somthing1/changelog.xml", 
+                "./changelogs/somthing2/changelog.xml",
+                "./changelogs/changelog.md"
+            ],
+            "categories": [
+                "bugfix",
+                "feature",
+                "tests"
+            ],
+            "append_position": "top"
+        }"#)
+    }
+
+    // rename this to something more sane
     mod file {
         use changelog_writer::config_systems::file::ConfigFile;
-
-        pub fn get_test_json_string() -> String {
-            // simplefied config for testing
-            String::from(
-            r#"{
-                "default_upgrade": "minor",
-                "version_types": [
-                    { "version_type": [ "major", "Ma" ] },
-                    { "version_type": [ "minor", "Mi"] }
-                ], 
-                "version_format": "MaMa.MiMi",
-                "changelog_paths": [ 
-                    "./changelogs/somthing1/changelog.xml", 
-                    "./changelogs/somthing2/changelog.xml",
-                    "./changelogs/changelog.md"
-                ],
-                "categories": [
-                    "bugfix",
-                    "feature",
-                    "tests"
-                ],
-                "append_position": "top"
-            }"#)
-        }
+        use super::*;
 
         #[test]
         fn create_new_config() {
             let json = get_test_json_string();
-            match ConfigFile::new(json) {
+            match ConfigFile::new(&json) {
                 Ok(_) => assert!(true),
                 Err(e) => {
                     println!("error: {}", e);
@@ -42,7 +46,7 @@ mod config_tests {
         #[test]
         fn validate_default_upgrade_minor() {
             let json = get_test_json_string();
-            let config_file = match ConfigFile::new(json) {
+            let config_file = match ConfigFile::new(&json) {
                 Ok(c) => c,
                 Err(e) => {
                     panic!("error: {}", e);
@@ -61,7 +65,7 @@ mod config_tests {
         #[test]
         fn validate_version_types_first_element_major() {
             let json = get_test_json_string();
-            let config_file = match ConfigFile::new(json) {
+            let config_file = match ConfigFile::new(&json) {
                 Ok(c) => c,
                 Err(e) => {
                     panic!("error: {}", e);
@@ -80,7 +84,7 @@ mod config_tests {
         #[test]
         fn validate_version_types_last_element_minor() {
             let json = get_test_json_string();
-            let config_file = match ConfigFile::new(json) {
+            let config_file = match ConfigFile::new(&json) {
                 Ok(c) => c,
                 Err(e) => {
                     panic!("error: {}", e);
@@ -100,7 +104,7 @@ mod config_tests {
         #[test]
         fn validate_version_format_mamamimi() {
             let json = get_test_json_string();
-            let config_file = match ConfigFile::new(json) {
+            let config_file = match ConfigFile::new(&json) {
                 Ok(c) => c,
                 Err(e) => {
                     panic!("error: {}", e);
@@ -184,8 +188,8 @@ mod config_tests {
         use changelog_writer::config_systems::file_args_merge;
 
         fn setup_tests(arg_string: String) -> (ArgumentType, ConfigFile) {
-            let json = file::get_test_json_string();
-            let file = match ConfigFile::new(json) {
+            let json = get_test_json_string();
+            let file = match ConfigFile::new(&json) {
                 Ok(f) => f,
                 Err(e) => {
                     panic!("error: {}", e);
@@ -247,16 +251,39 @@ mod config_tests {
         // TODO: these tests should use match as ok result in file that needs cleanup, and err does not
         #[test]
         fn init_changelog_md_results_ok() {
-            let test_ok = changelog_manipulator::init_changelog_md("hello_world.md").is_ok();
+            let test_ok = changelog_manipulator::init_changelog_md("hello_world.md", b"test").is_ok();
             cleanup_file("hello_world.md");
             assert!(test_ok);
         }
 
         #[test]
         fn init_changelog_md_with_illegal_extension_results_errs() {
-            let test_ok = changelog_manipulator::init_changelog_md("hello_world.illegal").is_err();
+            let test_ok = changelog_manipulator::init_changelog_md("hello_world.illegal", b"test").is_err();
             assert!(test_ok);
         }
 
     }
+
+    mod git_data_fetcher {
+        use changelog_writer::git_data_fetcher;
+        use changelog_writer::config_systems::file;
+       
+        use super::*;
+        use std::path::Path;
+
+        #[test]
+        fn create_commit_msgs_from_test_file() {
+            match git_data_fetcher::create_commit_msgs_to_parse(
+                "0000000000000000000000000000000000000000", 
+                Path::new("./tests/resources/.git_mock/"), 
+                vec![String::from("tests")]) 
+                {
+                    Ok(_) => assert!(true),
+                    Err(e) => panic!("error: {}", e),
+                }
+        }
+    }
 }
+
+
+    

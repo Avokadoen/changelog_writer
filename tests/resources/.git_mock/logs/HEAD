@@ -1,0 +1,20 @@
+0000000000000000000000000000000000000000 a08e8dfa368abd8ccc632988d81437cc0450d87c akselh <aksel.hjerpbakk@nb.no> 1567165870 +0200	initial pull
+a08e8dfa368abd8ccc632988d81437cc0450d87c 5b0f4d1125345557d408da4d2054fdb6e9df24cd akselh <aksel.hjerpbakk@nb.no> 1567165893 +0200	commit: project as is
+5b0f4d1125345557d408da4d2054fdb6e9df24cd faca8ee88d56760398e4befd99665f28fd2d5fbb akselh <aksel.hjerpbakk@nb.no> 1567171249 +0200	commit: cat:maintainfeat 'added specs to readme'
+faca8ee88d56760398e4befd99665f28fd2d5fbb 5ddc48d555a6bed8a0f4674407cc5c4657279321 akselh <aksel.hjerpbakk@nb.no> 1567171362 +0200	commit: small addition to previous push
+5ddc48d555a6bed8a0f4674407cc5c4657279321 18aefa047ed56e68d918818961c74dfbf0ea92cb akselh <aksel.hjerpbakk@nb.no> 1567175050 +0200	commit: started work on code base
+18aefa047ed56e68d918818961c74dfbf0ea92cb 5b73fc8286e9a35a8975c616ce2aa85ca5b7854a akselh <aksel.hjerpbakk@nb.no> 1567405221 +0200	pull origin master: Fast-forward
+5b73fc8286e9a35a8975c616ce2aa85ca5b7854a 5e9cfedac1c1902851e7c178c958b7e1d7849b15 akselh <aksel.hjerpbakk@nb.no> 1567430710 +0200	commit: minor changes to test
+5e9cfedac1c1902851e7c178c958b7e1d7849b15 bb83444fc5c00f5d0eeb66bb2221697461848a02 akselh <aksel.hjerpbakk@nb.no> 1567595576 +0200	commit: minor changes to arguments, added arguments struct, extended tests
+bb83444fc5c00f5d0eeb66bb2221697461848a02 d23c51556578da6a3dea4d2d91126fc253fe278a akselh <aksel.hjerpbakk@nb.no> 1567596688 +0200	commit: added upgrade step and tests for it
+d23c51556578da6a3dea4d2d91126fc253fe278a 5918245c9c79c1cb9e6d7bbcd1526a7af051ead9 akselh <aksel.hjerpbakk@nb.no> 1567758548 +0200	commit: added first validation function between file and arg config
+5918245c9c79c1cb9e6d7bbcd1526a7af051ead9 d93b8f076b1009e32c1dd5abbbdc73d2ae48bb45 akselh <aksel.hjerpbakk@nb.no> 1567766731 +0200	commit: added new test
+d93b8f076b1009e32c1dd5abbbdc73d2ae48bb45 808705e4f1c9b2d284dabc7643d29f34282497f0 akselh <aksel.hjerpbakk@nb.no> 1567773874 +0200	commit: minor change to readme
+808705e4f1c9b2d284dabc7643d29f34282497f0 fa61e6ca1a0c3428eaf50d9b75306c79a1d47b0b akselh <aksel.hjerpbakk@nb.no> 1568013849 +0200	commit: added current progress to readme
+fa61e6ca1a0c3428eaf50d9b75306c79a1d47b0b a5468c140cd8f44ae93713e95506f971c46e9f9e akselh <aksel.hjerpbakk@nb.no> 1568013926 +0200	commit: fixed error with md checklist
+a5468c140cd8f44ae93713e95506f971c46e9f9e 643ba3ce738114410c5b4fffa4da718a533f5c0c akselh <aksel.hjerpbakk@nb.no> 1568014091 +0200	commit: now markdown error is resolved, i hope hehe
+643ba3ce738114410c5b4fffa4da718a533f5c0c 643ba3ce738114410c5b4fffa4da718a533f5c01 akselh <aksel.hjerpbakk@nb.no> 1568014092 +0200	commit: cat:invalid 'this should not be a valid changelog message' hello
+643ba3ce738114410c5b4fffa4da718a533f5c01 643ba3ce738114410c5b4fffa4da718a533f5c02 akselh <aksel.hjerpbakk@nb.no> 1568014092 +0200	commit: cat:tests 'this should be a valid changelog message' hello2
+643ba3ce738114410c5b4fffa4da718a533f5c01 643ba3ce738114410c5b4fffa4da718a533f5c03 akselh <aksel.hjerpbakk@nb.no> 1568014092 +0200	commit: cat:tests 'non-linear history :O' hello2
+643ba3ce738114410c5b4fffa4da718a533f5c01 643ba3ce738114410c5b4fffa4da718a533f5c04 akselh <aksel.hjerpbakk@nb.no> 1568014092 +0200	commit: cat:tests 'non-linear history :O 2' hello3
+643ba3ce738114410c5b4fffa4da718a533f5c04 643ba3ce738114410c5b4fffa4da718a533f5c05 akselh <aksel.hjerpbakk@nb.no> 1568014092 +0200	commit: cat:tests 'non-linear history :O 3' hello4

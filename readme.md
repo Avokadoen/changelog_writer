@@ -1,7 +1,7 @@
 # Changelog Writer
 The goal of the changelog writer is to generate a structured changelog for different file formats either creating the file (initialize) or updating existing files
 
-The program should have a simple argument structure and repository specific settings should be defined in a ChangelogWriterConfig.json in the root of the repo
+The program should have a simple argument structure and repository specific settings should be defined in a ChangelogWriterConfig.json in the root of the repo. It uses HEAD log in .git folder to generate the changelog.
 
 # Current Progress
 - [x] Parse arguements
@@ -12,7 +12,11 @@ The program should have a simple argument structure and repository specific sett
     - [ ] Format git hostory to valid xml
     - [ ] Format git hostory to valid html
     - [ ] Format git hostory to valid ---
-- [ ] Send correct file to correct config path
+- [ ] Capable of a init to changelog (creating a new changelog file)
+- [ ] Capable of a update to changelog (-||-)
+- [ ] Enforce pull if the local repo is behind
+- [ ] ?Option to have author for feature?
+- [ ] ?Option to have date for feature added?
 
 # Specifications
 ## command and arguments
