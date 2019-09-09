@@ -108,12 +108,42 @@ pub mod git_data_fetcher {
     use std::fs::{self};
     use super::config_systems::file;
     
-    /*pub struct CommitMessageLog {
+    pub struct CommitMessageLog {
+        category: String,
         msg: String,
-    }*/
+    }
+
+    impl CommitMessageLog {
+        pub fn new(line: &str) -> Option<CommitMessageLog> {
+            let mut event_iter = line.split("cat:");
+            event_iter.next();
+
+            let filtered_string = match event_iter.next() {
+                Some(o) => String::from(o),
+                None => return None,
+            };
+
+            let category_value = match filtered_string.split(" ").next() {
+                Some(o) => String::from(o),
+                None => return None,
+            };
+
+            let mut msg_iterator = filtered_string.split("'");
+            msg_iterator.next();
+            let msg_value = match msg_iterator.next() {
+                Some(o) => String::from(o),
+                None => return None,
+            };
+
+            Some(CommitMessageLog {
+                category: category_value,
+                msg: msg_value,
+            })
+        }
+    }
 
     // TODO: refactor, too much heap
-    pub fn create_commit_msgs_to_parse(prev_hash: &str, git_dir: &Path, valid_versions: Vec<String>) -> Result<Vec<String>, &'static str> {
+    pub fn create_commit_msgs_to_parse(prev_line: i32, git_dir: &Path) -> Result<Vec<CommitMessageLog>, &'static str> {
         let logs_dir = git_dir.join("logs");
 
         if !logs_dir.is_dir() {
@@ -133,14 +163,18 @@ pub mod git_data_fetcher {
 
         let commit_events = head_content.split("\n");
 
-        let changes: Vec<String> = Vec::new(); 
-        for event in commit_events {
-            if event.contains("cat:") {
-                // valid_versions.iter().any(|v| v.contains_type
+        // refactor this to more functio noriented (check if there are some proper functions to get needed iterators)
+        let mut parsed_msgs: Vec<CommitMessageLog> = Vec::new(); 
+    
+        'events: for event in commit_events {
+    
 
-            }
-         }
+            parsed_msgs.push(match CommitMessageLog::new(event) {
+                Some(m) => m,
+                None => continue 'events,
+            });
+        }
 
-        Err("not implemented")
+        Ok(parsed_msgs)
     }
 }

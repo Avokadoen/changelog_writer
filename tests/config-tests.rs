@@ -275,8 +275,7 @@ mod config_tests {
         fn create_commit_msgs_from_test_file() {
             match git_data_fetcher::create_commit_msgs_to_parse(
                 "0000000000000000000000000000000000000000", 
-                Path::new("./tests/resources/.git_mock/"), 
-                vec![String::from("tests")]) 
+                Path::new("./tests/resources/.git_mock/")) 
                 {
                     Ok(_) => assert!(true),
                     Err(e) => panic!("error: {}", e),

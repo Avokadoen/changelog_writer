@@ -14,7 +14,6 @@ The program should have a simple argument structure and repository specific sett
     - [ ] Format git hostory to valid ---
 - [ ] Capable of a init to changelog (creating a new changelog file)
 - [ ] Capable of a update to changelog (-||-)
-- [ ] Enforce pull if the local repo is behind
 - [ ] ?Option to have author for feature?
 - [ ] ?Option to have date for feature added?
 
