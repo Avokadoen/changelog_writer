@@ -5,14 +5,14 @@ The program should have a simple argument structure and repository specific sett
 
 # Current Progress
 - [x] Parse arguements
-- [x] Parse
-- [x] Earth (Orbit/Moon)
-- [x] Mars
-- [ ] Jupiter
-- [ ] Saturn
-- [ ] Uranus
-- [ ] Neptune
-- [ ] Comet Haley
+- [x] Parse file settings
+- [x] Validate file to argument sanity 
+- [] Retrieve git commit history
+    - [] Format git hostory to valid md
+    - [] Format git hostory to valid xml
+    - [] Format git hostory to valid html
+    - [] Format git hostory to valid ---
+- [] Send correct file to correct config path
 
 # Specifications
 ## command and arguments
