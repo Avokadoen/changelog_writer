@@ -114,7 +114,14 @@ pub mod git_data_fetcher {
     }
 
     impl CommitMessageLog {
-        pub fn new(line: &str) -> Option<CommitMessageLog> {
+        pub fn new_from_vars(setCat: &str, setMsg: &str) -> CommitMessageLog {
+            CommitMessageLog {
+                category: String::from(setCat),
+                msg: String::from(setMsg),
+            }
+        }
+
+        pub fn new_from_line(line: &str) -> Option<CommitMessageLog> {
             let mut event_iter = line.split("cat:");
             event_iter.next();
 
@@ -161,19 +168,34 @@ pub mod git_data_fetcher {
             Err(_) => return Err("failed to read head"),
         };
 
-        let commit_events = head_content.split("\n");
+        let commit_events = head_content.split("\n").collect::<Vec<&str>>();
 
-        let relevant_event = &commit_events.collect::<Vec<&str>>()[prev_line..];
+        if commit_events.len() < prev_line {
+            return Err("invalid prev_line value");
+        }
+
+        // take collection iterator, convert to vec and then slice vec to just relevant content 
+        let relevant_event = &commit_events[prev_line..];
 
         // TODO: refactor this to more function oriented (check if there are some proper functions to get needed iterators)
-        let mut parsed_msgs: Vec<CommitMessageLog> = Vec::new(); 
+        let mut new_msgs: Vec<CommitMessageLog> = Vec::new(); 
         'events: for event in relevant_event {
-            parsed_msgs.push(match CommitMessageLog::new(event) {
+            new_msgs.push(match CommitMessageLog::new_from_line(event) {
                 Some(m) => m,
                 None => continue 'events,
             });
         }
 
-        Ok(parsed_msgs)
+        Ok(new_msgs)
+    }
+
+    pub fn validate_commit_msgs(new_msgs: Vec<CommitMessageLog>, config_categories: Vec<String>) -> Result<(), String> {
+        for msg in new_msgs {
+            if !config_categories.contains(&msg.category) {
+                return Err(format!("invalid category {}", msg.category))
+            }
+        }
+
+        Ok(())
     }
 }

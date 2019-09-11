@@ -294,6 +294,30 @@ mod config_tests {
                     Err(e) => panic!("error: {}", e),
                 }
         }
+
+        #[test]
+        fn valid_categories_to_msg_relation() {
+            let msgs: Vec<git_data_fetcher::CommitMessageLog> = vec![
+                git_data_fetcher::CommitMessageLog::new_from_vars("maintainfeat", ""),
+                git_data_fetcher::CommitMessageLog::new_from_vars("tests", ""),
+            ];
+
+            let categories: Vec<String> = vec![String::from("maintainfeat"), String::from("tests")];
+
+            assert!(git_data_fetcher::validate_commit_msgs(msgs, categories).is_ok());   
+        }
+
+        #[test]
+        fn invalid_categories_to_msg_relation() {
+            let msgs: Vec<git_data_fetcher::CommitMessageLog> = vec![
+                git_data_fetcher::CommitMessageLog::new_from_vars("maintainfeat", ""),
+                git_data_fetcher::CommitMessageLog::new_from_vars("tests", ""),
+            ];
+
+            let categories: Vec<String> = vec![String::from("tests")];
+
+            assert!(git_data_fetcher::validate_commit_msgs(msgs, categories).is_err());  
+        }
     }
 }
 
