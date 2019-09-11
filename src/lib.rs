@@ -143,7 +143,7 @@ pub mod git_data_fetcher {
     }
 
     // TODO: refactor, too much heap
-    pub fn create_commit_msgs_to_parse(prev_line: i32, git_dir: &Path) -> Result<Vec<CommitMessageLog>, &'static str> {
+    pub fn create_commit_msgs_to_parse(prev_line: usize, git_dir: &Path) -> Result<Vec<CommitMessageLog>, &'static str> {
         let logs_dir = git_dir.join("logs");
 
         if !logs_dir.is_dir() {
@@ -163,12 +163,11 @@ pub mod git_data_fetcher {
 
         let commit_events = head_content.split("\n");
 
-        // refactor this to more functio noriented (check if there are some proper functions to get needed iterators)
-        let mut parsed_msgs: Vec<CommitMessageLog> = Vec::new(); 
-    
-        'events: for event in commit_events {
-    
+        let relevant_event = &commit_events.collect::<Vec<&str>>()[prev_line..];
 
+        // TODO: refactor this to more function oriented (check if there are some proper functions to get needed iterators)
+        let mut parsed_msgs: Vec<CommitMessageLog> = Vec::new(); 
+        'events: for event in relevant_event {
             parsed_msgs.push(match CommitMessageLog::new(event) {
                 Some(m) => m,
                 None => continue 'events,

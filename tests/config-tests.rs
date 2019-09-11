@@ -273,11 +273,24 @@ mod config_tests {
 
         #[test]
         fn create_commit_msgs_from_test_file() {
-            match git_data_fetcher::create_commit_msgs_to_parse(
-                "0000000000000000000000000000000000000000", 
-                Path::new("./tests/resources/.git_mock/")) 
+            match git_data_fetcher::create_commit_msgs_to_parse(0, Path::new("./tests/resources/.git_mock/")) 
                 {
                     Ok(_) => assert!(true),
+                    Err(e) => panic!("error: {}", e),
+                }
+        }
+
+        #[test]
+        fn fetch_from_19_gives_1_msg() {
+            match git_data_fetcher::create_commit_msgs_to_parse(19, Path::new("./tests/resources/.git_mock/")) 
+                {
+                    Ok(o) => {if o.len() == 1 {
+                        assert!(true)
+                    } else {
+                        println!("vec lenght excpected to be 1 was {}", o.len());
+                        assert!(false)
+                    }
+                    },
                     Err(e) => panic!("error: {}", e),
                 }
         }
