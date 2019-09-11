@@ -7,11 +7,11 @@ The program should have a simple argument structure and repository specific sett
 - [x] Parse arguements
 - [x] Parse file settings
 - [x] Validate file to argument sanity 
-- [ ] Retrieve git commit history
-    - [ ] Format git hostory to valid md
-    - [ ] Format git hostory to valid xml
-    - [ ] Format git hostory to valid html
-    - [ ] Format git hostory to valid ---
+- [x] Retrieve git commit history
+    - [ ] Format git history to valid md
+    - [ ] Format git history to valid xml
+    - [ ] Format git history to valid html
+    - [ ] Format git history to valid ---
 - [ ] Capable of a init to changelog (creating a new changelog file)
 - [ ] Capable of a update to changelog (-||-)
 - [ ] ?Option to have author for feature?
