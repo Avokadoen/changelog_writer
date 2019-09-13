@@ -237,8 +237,9 @@ mod config_tests {
         }
     }
 
-    mod changelog_manipulator {
-        use changelog_writer::config_systems::changelog_manipulator;
+    mod changelog_generator {
+        use changelog_writer::config_systems::changelog_generator;
+        use changelog_writer::git_data_fetcher;
         use std::fs;
 
         fn cleanup_file(path: &str) {
@@ -251,24 +252,43 @@ mod config_tests {
         // TODO: these tests should use match as ok result in file that needs cleanup, and err does not
         #[test]
         fn init_changelog_md_results_ok() {
-            let test_ok = changelog_manipulator::init_changelog_md("hello_world.md", b"test").is_ok();
-            cleanup_file("hello_world.md");
+            let test_ok = changelog_generator::create_changelog("hello_world.md", b"test").is_ok();
+            if test_ok {
+                cleanup_file("hello_world.md");
+            }
             assert!(test_ok);
         }
 
         #[test]
-        fn init_changelog_md_with_illegal_extension_results_errs() {
-            let test_ok = changelog_manipulator::init_changelog_md("hello_world.illegal", b"test").is_err();
-            assert!(test_ok);
+        fn parse_commit_creates_valid_output() {
+            let msgs: Vec<git_data_fetcher::CommitMessageLog> = vec![
+                git_data_fetcher::CommitMessageLog::new_from_vars("maintainfeat", "did some readme stuff maybe"),
+                git_data_fetcher::CommitMessageLog::new_from_vars("tests", "created 1000th unit test"),
+            ];
+
+            let categories: Vec<String> = vec![String::from("maintainfeat"), String::from("tests")];
+
+            let md_changes = changelog_generator::parse_commit_msgs_to_md(msgs, categories, "1.1.1");
+
+            // we cant assert the full string as it uses a hashmap which has random access order
+            if !&md_changes.contains("#### maintainfeat\n      - did some readme stuff maybe\n") {
+                assert!(false, "maintainstring was of unexpected value");
+            }
+            if !&md_changes.contains("#### tests\n      - created 1000th unit test\n") {
+                assert!(false, "tests was of unexpected value");
+            }
+            if !&md_changes.contains("## 1.1.1\n\n") {
+                assert!(false, "version was of unexpected value");
+            }
+
+            assert!(true);
         }
 
     }
 
     mod git_data_fetcher {
         use changelog_writer::git_data_fetcher;
-        use changelog_writer::config_systems::file;
-       
-        use super::*;
+
         use std::path::Path;
 
         #[test]

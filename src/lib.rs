@@ -82,14 +82,16 @@ pub mod config_systems {
         }
     }
 
-    pub mod changelog_manipulator {
+    pub mod changelog_generator {
         use std::fs::File;
         use std::io::prelude::*;
+        use std::collections::HashMap;
+        use std::path::Path;
 
-        pub fn init_changelog_md(path: &str, content: &[u8]) -> Result<(), &'static str> {
-            if !path.contains(".md") {
-                return Err("recieved non md file");
-            }
+        use super::super::git_data_fetcher;
+
+        pub fn create_changelog(path: &str, content: &[u8]) -> Result<(), &'static str> {
+        
             let mut file = match File::create(path) {
                 Ok(o) => o,
                 Err(_) => return Err("failed to create file"),
@@ -100,24 +102,54 @@ pub mod config_systems {
             };
             Ok(())
         }
+
+        // TODO: refactor, and just use paramateres supplied as we have to do a lot of extra heap stuff with HashMap
+        pub fn parse_commit_msgs_to_md(msgs: Vec<git_data_fetcher::CommitMessageLog>, config_categories: Vec<String>, new_version: &str) -> String {
+            // create arrays or vecs according to config categories len
+            let mut changelog_msgs: HashMap<String, String> = HashMap::new();
+
+            for msg in msgs {
+                if config_categories.contains(&msg.category) {
+                    changelog_msgs.insert(msg.category, msg.msg);
+                } else {
+                    eprint!("found invalid category: {} with message {}\ncheck your config file", msg.category, msg.msg);
+                }
+            }
+
+            let mut new_version_changelog_md = String::from(format!("## {}\n", new_version));
+
+            for cat in changelog_msgs.keys() {
+                new_version_changelog_md.push_str(&format!("\n   #### {}", cat));
+
+                for msg in changelog_msgs.get(cat) {
+                    new_version_changelog_md.push_str(&format!("\n      - {}", msg));
+                }
+                new_version_changelog_md.push('\n');
+            }
+
+            return new_version_changelog_md;
+        }
+
+        pub fn insert_parsed_commits(parsed_commits: &str, path: &Path) {
+            
+        }
     }
 }
 
 pub mod git_data_fetcher {
     use std::path::Path;
     use std::fs::{self};
-    use super::config_systems::file;
     
     pub struct CommitMessageLog {
-        category: String,
-        msg: String,
+        pub category: String,
+        pub msg: String,
     }
 
     impl CommitMessageLog {
-        pub fn new_from_vars(setCat: &str, setMsg: &str) -> CommitMessageLog {
+        pub fn new_from_vars(set_cat: &str, set_msg: &str) -> CommitMessageLog {
             CommitMessageLog {
-                category: String::from(setCat),
-                msg: String::from(setMsg),
+                category: String::from(set_cat),
+                msg: String::from(set_msg),
             }
         }
 
@@ -185,6 +217,8 @@ pub mod git_data_fetcher {
                 None => continue 'events,
             });
         }
+
+        // TODO: call validate?
 
         Ok(new_msgs)
     }
