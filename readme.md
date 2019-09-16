@@ -8,14 +8,15 @@ The program should have a simple argument structure and repository specific sett
 - [x] Parse file settings
 - [x] Validate file to argument sanity 
 - [x] Retrieve git commit history
-    - [ ] Format git history to valid md
+    - [x] Format git history to valid md
     - [ ] Format git history to valid xml
     - [ ] Format git history to valid html
     - [ ] Format git history to valid ---
-- [ ] Capable of a init to changelog (creating a new changelog file)
-- [ ] Capable of a update to changelog (-||-)
+- [x] Capable of a init to changelog (creating a new changelog file)
+- [x] Capable of a update to changelog (-||-)
 - [ ] ?Option to have author for feature?
 - [ ] ?Option to have date for feature added?
+- [ ] Init/Update a changelog through commandline
 
 # Specifications
 ## command and arguments

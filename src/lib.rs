@@ -58,7 +58,6 @@ pub mod config_systems {
                     "-i" | "--init" => ArgumentType::Init,
                     _ => return Err("invalid argument"),
                 };
-            
 
                 Ok(args_type)
             }
@@ -87,6 +86,7 @@ pub mod config_systems {
         use std::io::prelude::*;
         use std::collections::HashMap;
         use std::path::Path;
+        use std::fs::OpenOptions;
 
         use super::super::git_data_fetcher;
 
@@ -96,9 +96,8 @@ pub mod config_systems {
                 Ok(o) => o,
                 Err(_) => return Err("failed to create file"),
             };
-            match file.write_all(content) {
-                Err(_) => return Err("failed to write bytes to file"),
-                _ => (),
+            if let Err(_) = file.write_all(content) {
+                return Err("failed to write bytes to file");
             };
             Ok(())
         }
@@ -130,8 +129,18 @@ pub mod config_systems {
             return new_version_changelog_md;
         }
 
-        pub fn insert_parsed_commits(parsed_commits: &str, path: &Path) {
+        pub fn write_parsed_commits(parsed_commits: &str, path: &Path) -> Result<(), &'static str> {
+            let mut file = OpenOptions::new()
+                                .write(true)
+                                .append(true)
+                                .open(path)
+                                .unwrap();
+
+            if let Err(_) = write!(file, "{}", parsed_commits) {
+                return Err("Couldn't write to file");
+            }
             
+            Ok(())
         }
     }
 }
