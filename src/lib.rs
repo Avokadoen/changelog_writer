@@ -5,6 +5,8 @@
 pub mod config_systems {
     pub mod file {
         use serde::{Deserialize};
+        use std::path::Path;
+        use std::fs::{self, DirEntry};
 
         #[derive(Deserialize)]
         pub struct VersionType {
@@ -30,13 +32,29 @@ pub mod config_systems {
         // TODO: validate values so that they can't be mismatched
         impl ConfigFile {
             pub fn new(json_string: &str) -> Result<ConfigFile, Box<dyn std::error::Error + 'static>> {
-                //let contents = fs::read_to_string(path)?;
                 let config: ConfigFile = serde_json::from_str(&json_string)?;
                 Ok(config)
             }
+
+
+
+            fn load(config_path: &Path) -> Result<ConfigFile, Box<dyn std::error::Error + 'static>> {
+                let contents = fs::read_to_string(config_path)?;
+                let config: ConfigFile = serde_json::from_str(&contents)?;
+                Ok(config)
+            }
+
+            // TODO: this code is hardcoded and bad (specifically paths and lack of search), refactor!
+            pub fn load_config(current_path: &Path) -> Result<ConfigFile, Box<dyn std::error::Error + 'static>> {
+                let changelog_name = Path::new("changelog_config.json");
+                let changelog_path = current_path.join(changelog_name);
+                ConfigFile::load(&changelog_path)
+            }
+
         }
     }
     pub mod args {
+
         #[derive(PartialEq, Debug)]
         pub enum ArgumentType {
             Init,
@@ -45,21 +63,35 @@ pub mod config_systems {
         }
 
         impl ArgumentType {
-             pub fn parse_arguments(args: &[String]) -> Result<ArgumentType, &'static str> {
-                if args.len() < 2 || args.len() > 3 {
-                    return Err("invalid number of arguments expected 2-3"); // TOOD: got {}
-                }
+             pub fn parse_arguments(args: &[String]) -> Result<ArgumentType, String> {
                 // TODO: replace clone of string "version"
+                if args.len() <= 1 {
+                    return Err(ArgumentType::useage("not enough arguments"));
+                }
+
                 let args_type = match args[1].as_ref() {
                     "-u" | "--upgrade" => match args.get(2) {
                        Some(version) => ArgumentType::Upgrade(String::from(version)),
-                       None => return Err("upgrade step was none"),
+                       None => return Err(ArgumentType::useage("invalid upgrade step")),
                     }
                     "-i" | "--init" => ArgumentType::Init,
-                    _ => return Err("invalid argument"),
+                    _ => return Err(ArgumentType::useage("invalid argument")),
                 };
 
                 Ok(args_type)
+            }
+
+            fn useage(prefix: &str) -> String {
+                format!("\t\t{}
+                -u | --upgrade <upgrade step>   case insensitive.
+                                                the version step you want to take
+                                                can be any of:
+                                                of types defined in repo config file
+
+                -i | --init                     creates a new config file from default
+                                                (?maybe insert git hook to check for valid
+                                                commit message or is it too intrusive?)"
+                                                , prefix)
             }
         }
     }
@@ -80,68 +112,68 @@ pub mod config_systems {
             }
         }
     }
+}
 
-    pub mod changelog_generator {
-        use std::fs::File;
-        use std::io::prelude::*;
-        use std::collections::HashMap;
-        use std::path::Path;
-        use std::fs::OpenOptions;
+pub mod changelog_generator {
+    use std::fs::File;
+    use std::io::prelude::*;
+    use std::collections::HashMap;
+    use std::path::Path;
+    use std::fs::OpenOptions;
 
-        use super::super::git_data_fetcher;
+    use super::git_data_fetcher;
 
-        pub fn create_changelog(path: &str, content: &[u8]) -> Result<(), &'static str> {
+    pub fn create_changelog(path: &str, content: &[u8]) -> Result<(), &'static str> {
+    
+        let mut file = match File::create(path) {
+            Ok(o) => o,
+            Err(_) => return Err("failed to create file"),
+        };
+        if let Err(_) = file.write_all(content) {
+            return Err("failed to write bytes to file");
+        };
+        Ok(())
+    }
+
+    // TODO: refactor, and just use paramateres supplied as we have to do a lot of extra heap stuff with HashMap
+    pub fn parse_commit_msgs_to_md(msgs: Vec<git_data_fetcher::CommitMessageLog>, config_categories: Vec<String>, new_version: &str) -> String {
+        // create arrays or vecs according to config categories len
+        let mut changelog_msgs: HashMap<String, String> = HashMap::new();
+
+        for msg in msgs {
+            if config_categories.contains(&msg.category) {
+                changelog_msgs.insert(msg.category, msg.msg);
+            } else {
+                eprint!("found invalid category: {} with message {}\ncheck your config file", msg.category, msg.msg);
+            }
+        }
+
+        let mut new_version_changelog_md = String::from(format!("## {}\n", new_version));
+
+        for cat in changelog_msgs.keys() {
+            new_version_changelog_md.push_str(&format!("\n   #### {}", cat));
+
+            for msg in changelog_msgs.get(cat) {
+                new_version_changelog_md.push_str(&format!("\n      - {}", msg));
+            }
+            new_version_changelog_md.push('\n');
+        }
+
+        return new_version_changelog_md;
+    }
+
+    pub fn write_parsed_commits(parsed_commits: &str, path: &Path) -> Result<(), &'static str> {
+        let mut file = OpenOptions::new()
+                            .write(true)
+                            .append(true)
+                            .open(path)
+                            .unwrap();
+
+        if let Err(_) = write!(file, "{}", parsed_commits) {
+            return Err("Couldn't write to file");
+        }
         
-            let mut file = match File::create(path) {
-                Ok(o) => o,
-                Err(_) => return Err("failed to create file"),
-            };
-            if let Err(_) = file.write_all(content) {
-                return Err("failed to write bytes to file");
-            };
-            Ok(())
-        }
-
-        // TODO: refactor, and just use paramateres supplied as we have to do a lot of extra heap stuff with HashMap
-        pub fn parse_commit_msgs_to_md(msgs: Vec<git_data_fetcher::CommitMessageLog>, config_categories: Vec<String>, new_version: &str) -> String {
-            // create arrays or vecs according to config categories len
-            let mut changelog_msgs: HashMap<String, String> = HashMap::new();
-
-            for msg in msgs {
-                if config_categories.contains(&msg.category) {
-                    changelog_msgs.insert(msg.category, msg.msg);
-                } else {
-                    eprint!("found invalid category: {} with message {}\ncheck your config file", msg.category, msg.msg);
-                }
-            }
-
-            let mut new_version_changelog_md = String::from(format!("## {}\n", new_version));
-
-            for cat in changelog_msgs.keys() {
-                new_version_changelog_md.push_str(&format!("\n   #### {}", cat));
-
-                for msg in changelog_msgs.get(cat) {
-                    new_version_changelog_md.push_str(&format!("\n      - {}", msg));
-                }
-                new_version_changelog_md.push('\n');
-            }
-
-            return new_version_changelog_md;
-        }
-
-        pub fn write_parsed_commits(parsed_commits: &str, path: &Path) -> Result<(), &'static str> {
-            let mut file = OpenOptions::new()
-                                .write(true)
-                                .append(true)
-                                .open(path)
-                                .unwrap();
-
-            if let Err(_) = write!(file, "{}", parsed_commits) {
-                return Err("Couldn't write to file");
-            }
-            
-            Ok(())
-        }
+        Ok(())
     }
 }
 

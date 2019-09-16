@@ -1,0 +1,19 @@
+{
+    "default_upgrade": "minor",
+    "version_types": [
+        { "version_type": [ "major", "Ma" ] },
+        { "version_type": [ "minor", "Mi"] }
+    ], 
+    "version_format": "MaMa.MiMi",
+    "changelog_paths": [ 
+        "./changelogs/somthing1/changelog.xml", 
+        "./changelogs/somthing2/changelog.xml",
+        "./changelog.md"
+    ],
+    "categories": [
+        "bugfix",
+        "feature",
+        "tests"
+    ],
+    "append_position": "top"
+}

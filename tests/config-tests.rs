@@ -1,3 +1,6 @@
+// TODO: convert functions in lib to private that should be private
+//       move internal tests to test file in root of project as this will give access to private members
+
 #[cfg(test)]
 mod config_tests {
 
@@ -238,7 +241,7 @@ mod config_tests {
     }
 
     mod changelog_generator {
-        use changelog_writer::config_systems::changelog_generator;
+        use changelog_writer::changelog_generator;
         use changelog_writer::git_data_fetcher;
         use std::fs;
 
@@ -261,6 +264,31 @@ mod config_tests {
 
         #[test]
         fn parse_commit_creates_valid_output() {
+            let msgs: Vec<git_data_fetcher::CommitMessageLog> = vec![
+                git_data_fetcher::CommitMessageLog::new_from_vars("maintainfeat", "did some readme stuff maybe"),
+                git_data_fetcher::CommitMessageLog::new_from_vars("tests", "created 1000th unit test"),
+            ];
+
+            let categories: Vec<String> = vec![String::from("maintainfeat"), String::from("tests")];
+
+            let md_changes = changelog_generator::parse_commit_msgs_to_md(msgs, categories, "1.1.1");
+
+            // we cant assert the full string as it uses a hashmap which has random access order
+            if !&md_changes.contains("#### maintainfeat\n      - did some readme stuff maybe\n") {
+                assert!(false, "maintainstring was of unexpected value");
+            }
+            if !&md_changes.contains("#### tests\n      - created 1000th unit test\n") {
+                assert!(false, "tests was of unexpected value");
+            }
+            if !&md_changes.contains("## 1.1.1\n\n") {
+                assert!(false, "version was of unexpected value");
+            }
+
+            assert!(true);
+        }
+
+         #[test]
+        fn append_parsed_commits() {
             let msgs: Vec<git_data_fetcher::CommitMessageLog> = vec![
                 git_data_fetcher::CommitMessageLog::new_from_vars("maintainfeat", "did some readme stuff maybe"),
                 git_data_fetcher::CommitMessageLog::new_from_vars("tests", "created 1000th unit test"),

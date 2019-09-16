@@ -14,9 +14,9 @@ The program should have a simple argument structure and repository specific sett
     - [ ] Format git history to valid ---
 - [x] Capable of a init to changelog (creating a new changelog file)
 - [x] Capable of a update to changelog (-||-)
+- [ ] Init/Update a changelog through commandline
 - [ ] ?Option to have author for feature?
 - [ ] ?Option to have date for feature added?
-- [ ] Init/Update a changelog through commandline
 
 # Specifications
 ## command and arguments
