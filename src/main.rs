@@ -38,7 +38,7 @@ fn main() {
         Err(e) => panic!("\nfailed to retrieve changes in git, error: {}\n", e),
     };
     // TODO upgrade step, only if vec contains any .md
-    let md_changes = changelog_generator::parse_commit_msgs_to_md(commit_msgs, config_file.categories, "major"); 
+    let md_changes = changelog_generator::parse_commit_msgs_to_md(commit_msgs, config_file.categories, "0.0.0"); 
     for changelog in config_file.changelog_paths {
         if changelog.contains(".md") {
             if let Err(e) = changelog_generator::create_changelog(&md_changes, &Path::new(&changelog)) {
