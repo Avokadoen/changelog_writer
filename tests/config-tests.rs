@@ -207,28 +207,28 @@ mod config_tests {
         fn upgrade_major_with_major_in_file_verified_true() {
             let (arg, file) = setup_tests(String::from("major"));
 
-            assert!(file_args_merge::verify_arg_to_file_upgrade(arg, file));
+            assert!(file_args_merge::verify_arg_to_file_upgrade(&arg, &file));
         }
         
         #[test]
         fn upgrade_ma_with_major_in_file_verified_true() {
             let (arg, file) = setup_tests(String::from("ma"));
 
-            assert!(file_args_merge::verify_arg_to_file_upgrade(arg, file));
+            assert!(file_args_merge::verify_arg_to_file_upgrade(&arg, &file));
         }
 
         #[test]
         fn upgrade_minor_with_major_in_file_verified_true() {
             let (arg, file) = setup_tests(String::from("minor"));
 
-            assert!(file_args_merge::verify_arg_to_file_upgrade(arg, file));
+            assert!(file_args_merge::verify_arg_to_file_upgrade(&arg, &file));
         }
 
         #[test]
         fn upgrade_mi_with_major_in_file_verified_true() {
             let (arg, file) = setup_tests(String::from("mi"));
 
-            assert!(file_args_merge::verify_arg_to_file_upgrade(arg, file));
+            assert!(file_args_merge::verify_arg_to_file_upgrade(&arg, &file));
         }
 
 
@@ -236,7 +236,7 @@ mod config_tests {
         fn upgrade_major_with_manure_in_file_verified_false() {
             let (arg, file) = setup_tests(String::from("manure"));
 
-            assert!(!file_args_merge::verify_arg_to_file_upgrade(arg, file));
+            assert!(!file_args_merge::verify_arg_to_file_upgrade(&arg, &file));
         }
     }
 
@@ -244,6 +244,7 @@ mod config_tests {
         use changelog_writer::changelog_generator;
         use changelog_writer::git_data_fetcher;
         use std::fs;
+        use std::path::Path;
 
         fn cleanup_file(path: &str) {
             match fs::remove_file(path) {
@@ -255,7 +256,7 @@ mod config_tests {
         // TODO: these tests should use match as ok result in file that needs cleanup, and err does not
         #[test]
         fn init_changelog_md_results_ok() {
-            let test_ok = changelog_generator::create_changelog("hello_world.md", b"test").is_ok();
+            let test_ok = changelog_generator::create_changelog("test", Path::new("hello_world.md")).is_ok();
             if test_ok {
                 cleanup_file("hello_world.md");
             }

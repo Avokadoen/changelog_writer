@@ -15,6 +15,7 @@ The program should have a simple argument structure and repository specific sett
 - [x] Capable of a init to changelog (creating a new changelog file)
 - [x] Capable of a update to changelog (-||-)
 - [ ] Init/Update a changelog through commandline
+- [ ] Snapshots generate on git push | the changelog should showcase a snapshot changelog when the user push
 - [ ] ?Option to have author for feature?
 - [ ] ?Option to have date for feature added?
 
@@ -22,18 +23,18 @@ The program should have a simple argument structure and repository specific sett
 ## command and arguments
 USEAGE:
 
-changelogwriter [OPTIONS]
+changelogwriter [OPTIONS] []
 
 OPTIONS:
 <pre>
--u | --upgrade          case insensitive.
-                        the version step you want to take
-                        can be any of:
-                        of types defined in repo config file
+-u | --upgrade <versionType>    case insensitive.
+                                the version step you want to take
+                                can be any of:
+                                of types defined in repo config file (versionType)
 
--i | --init             creates a new config file from default
-                        (?maybe insert git hook to check for valid
-                        commit message or is it too intrusive?)
+-i | --init                     creates a new config file from default
+                                (?maybe insert git hook to check for valid
+                                commit message or is it too intrusive?)
 </pre>
 
 

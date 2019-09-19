@@ -1,12 +1,13 @@
 // TODO: document code as i reach a functional state ///
 // TODO: refactor modules
 // TODO: create file structure, here and tests!
+// TODO: remove changelog_ from modules
 
 pub mod config_systems {
     pub mod file {
         use serde::{Deserialize};
         use std::path::Path;
-        use std::fs::{self, DirEntry};
+        use std::fs;
 
         #[derive(Deserialize)]
         pub struct VersionType {
@@ -35,7 +36,6 @@ pub mod config_systems {
                 let config: ConfigFile = serde_json::from_str(&json_string)?;
                 Ok(config)
             }
-
 
 
             fn load(config_path: &Path) -> Result<ConfigFile, Box<dyn std::error::Error + 'static>> {
@@ -102,7 +102,7 @@ pub mod config_systems {
         use super::file::ConfigFile;
 
         // TODO: move this to somewhere else (maybe argument type)
-        pub fn verify_arg_to_file_upgrade(argument_type: ArgumentType, config_file: ConfigFile) -> bool {
+        pub fn verify_arg_to_file_upgrade(argument_type: &ArgumentType, config_file: &ConfigFile) -> bool {
             match argument_type {
                 ArgumentType::Init => true,
                 ArgumentType::Upgrade(s) => 
@@ -123,19 +123,20 @@ pub mod changelog_generator {
 
     use super::git_data_fetcher;
 
-    pub fn create_changelog(path: &str, content: &[u8]) -> Result<(), &'static str> {
+    pub fn create_changelog(content: &str, path: &Path) -> Result<(), &'static str> {
     
         let mut file = match File::create(path) {
             Ok(o) => o,
             Err(_) => return Err("failed to create file"),
         };
-        if let Err(_) = file.write_all(content) {
+        if let Err(_) = file.write_all(content.as_bytes()) {
             return Err("failed to write bytes to file");
         };
         Ok(())
     }
 
     // TODO: refactor, and just use paramateres supplied as we have to do a lot of extra heap stuff with HashMap
+    // TODO: private
     pub fn parse_commit_msgs_to_md(msgs: Vec<git_data_fetcher::CommitMessageLog>, config_categories: Vec<String>, new_version: &str) -> String {
         // create arrays or vecs according to config categories len
         let mut changelog_msgs: HashMap<String, String> = HashMap::new();
@@ -144,15 +145,13 @@ pub mod changelog_generator {
             if config_categories.contains(&msg.category) {
                 changelog_msgs.insert(msg.category, msg.msg);
             } else {
-                eprint!("found invalid category: {} with message {}\ncheck your config file", msg.category, msg.msg);
+                print!("found invalid category: {} with message {}\ncheck your config file\n", msg.category, msg.msg);
             }
         }
 
         let mut new_version_changelog_md = String::from(format!("## {}\n", new_version));
-
         for cat in changelog_msgs.keys() {
             new_version_changelog_md.push_str(&format!("\n   #### {}", cat));
-
             for msg in changelog_msgs.get(cat) {
                 new_version_changelog_md.push_str(&format!("\n      - {}", msg));
             }
@@ -163,11 +162,10 @@ pub mod changelog_generator {
     }
 
     pub fn write_parsed_commits(parsed_commits: &str, path: &Path) -> Result<(), &'static str> {
-        let mut file = OpenOptions::new()
-                            .write(true)
-                            .append(true)
-                            .open(path)
-                            .unwrap();
+        let mut file = match OpenOptions::new().write(true).append(true).open(path) {
+            Ok(o) => o,
+            Err(_) => return Err("Failed to open/append to file"),
+        };
 
         if let Err(_) = write!(file, "{}", parsed_commits) {
             return Err("Couldn't write to file");
@@ -221,6 +219,8 @@ pub mod git_data_fetcher {
             })
         }
     }
+
+    //pub fn gte prev line
 
     // TODO: refactor, too much heap
     pub fn create_commit_msgs_to_parse(prev_line: usize, git_dir: &Path) -> Result<Vec<CommitMessageLog>, &'static str> {
